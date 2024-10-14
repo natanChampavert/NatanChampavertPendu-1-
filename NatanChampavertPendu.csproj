@@ -94,5 +94,25 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\1.png" />
+    <Resource Include="Resources\Images\2.png" />
+    <Resource Include="Resources\Images\3.png" />
+    <Resource Include="Resources\Images\4.png" />
+    <Resource Include="Resources\Images\5.png" />
+    <Resource Include="Resources\Images\6.png" />
+    <Resource Include="Resources\Images\7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Sounds\loose.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Sounds\back.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Sounds\win.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

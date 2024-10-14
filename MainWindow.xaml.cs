@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace NatanChampavertPendu
 {
@@ -17,13 +18,26 @@ namespace NatanChampavertPendu
         private List<Button> letterButtons; // Liste des boutons de lettres
         private MediaPlayer backgroundMusic;
         private MediaPlayer winSound;
-        private MediaPlayer
+        private MediaPlayer loseSound;
 
         public MainWindow()
         {
             InitializeComponent();
-            InitializeGame();
             LoadSounds();
+            InitializeGame();
+        }
+
+        // Charge les fichiers audio
+        private void LoadSounds()
+        {
+            backgroundMusic = new MediaPlayer();
+            backgroundMusic.Open(new Uri("Resources/Sounds/back.mp3", UriKind.Relative));
+
+            winSound = new MediaPlayer();
+            winSound.Open(new Uri("Resources/Sounds/win.mp3", UriKind.Relative)); // Vérifie que ce chemin est correct
+
+            loseSound = new MediaPlayer();
+            loseSound.Open(new Uri("Resources/Sounds/lose.mp3", UriKind.Relative)); // Vérifie que ce chemin est correct
         }
 
         // Initialise une nouvelle partie
@@ -33,21 +47,31 @@ namespace NatanChampavertPendu
             Random rand = new Random();
             selectedWord = GuessWords[rand.Next(GuessWords.Count)].ToUpper();
             guessedWord = new string('_', selectedWord.Length).ToCharArray();
-            attempts = maxAttempts;  // Réinitialiser le nombre d'essais
+            attempts = maxAttempts; // Réinitialiser le nombre d'essais
 
             // Mettre à jour l'affichage du mot à deviner
             UpdateDisplayedWord();
 
             // Liste des boutons de lettres à réactiver pour chaque nouvelle partie
-            letterButtons = new List<Button> { BTN_A, BTN_B, BTN_C, BTN_D, BTN_E, BTN_F, BTN_G, BTN_H, BTN_I, BTN_J, BTN_K, BTN_L, BTN_M, BTN_N, BTN_O, BTN_P, BTN_Q, BTN_R, BTN_S, BTN_T, BTN_U, BTN_V, BTN_W, BTN_X, BTN_Y, BTN_Z };
+            letterButtons = new List<Button>
+            {
+                BTN_A, BTN_B, BTN_C, BTN_D, BTN_E, BTN_F, BTN_G, BTN_H,
+                BTN_I, BTN_J, BTN_K, BTN_L, BTN_M, BTN_N, BTN_O, BTN_P,
+                BTN_Q, BTN_R, BTN_S, BTN_T, BTN_U, BTN_V, BTN_W, BTN_X,
+                BTN_Y, BTN_Z
+            };
 
-            // Réactiver tous les boutons et supprimer l'ancienne liaison d'événement (pour éviter d'empiler des événements)
+            // Réactiver tous les boutons et supprimer l'ancienne liaison d'événement
             foreach (Button btn in letterButtons)
             {
                 btn.IsEnabled = true;
                 btn.Click -= LetterButton_Click; // Supprimer tout ancien événement pour éviter des doublons
                 btn.Click += LetterButton_Click; // Ajouter l'événement du clic
             }
+
+            // Commencer la musique de fond
+            backgroundMusic.Stop(); // Arrête la musique si elle était en cours
+            backgroundMusic.Play();
         }
 
         // Mise à jour de l'affichage du mot à deviner
@@ -94,6 +118,8 @@ namespace NatanChampavertPendu
                 // Vérifier si le joueur a gagné
                 if (!new string(guessedWord).Contains('_'))
                 {
+                    backgroundMusic.Stop(); // Arrête la musique de fond
+                    winSound.Play(); // Joue le son de victoire
                     MessageBox.Show("Félicitations, vous avez gagné !");
                     InitializeGame(); // Redémarrer une nouvelle partie
                 }
@@ -104,6 +130,8 @@ namespace NatanChampavertPendu
                 attempts--;
                 if (attempts == 0)
                 {
+                    backgroundMusic.Stop(); // Arrête la musique de fond
+                    loseSound.Play(); // Joue le son de défaite
                     MessageBox.Show($"Vous avez perdu ! Le mot était : {selectedWord}");
                     InitializeGame(); // Redémarrer une nouvelle partie
                 }
@@ -111,44 +139,3 @@ namespace NatanChampavertPendu
         }
     }
 }
-
-// Load sound files
-private void LoadSounds()
-{
-    backgroundMusic = new MediaPlayer();
-    backgroundMusic.Open(new Uri("path_to_your_background_music.mp3", UriKind.Relative));
-    backgroundMusic.Volume = 0.5; // Adjust the volume
-
-    winSound = new MediaPlayer();
-    winSound.Open(new Uri("path_to_your_win_sound.mp3", UriKind.Relative));
-
-    loseSound = new MediaPlayer();
-    loseSound.Open(new Uri("sons/Lose sound effects.mp3", UriKind.Relative));
-}
-
-// Start the background music when the game starts
-private void InitializeGame()
-{
-    // Your existing code
-    backgroundMusic.Play();
-}
-
-// Play win sound
-if (!new string(guessedWord).Contains('_'))
-{
-    winSound.Play();
-    MessageBox.Show("Félicitations, vous avez gagné !");
-    InitializeGame(); // Redémarrer une nouvelle partie
-}
-
-// Play lose sound
-else
-{
-    attempts--;
-    if (attempts == 0)
-    {
-        loseSound.Play();
-        MessageBox.Show($"Vous avez perdu ! Le mot était : {selectedWord}");
-        InitializeGame(); // Redémarrer une nouvelle partie
-    }
-
